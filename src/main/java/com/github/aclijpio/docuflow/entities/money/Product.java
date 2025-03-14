@@ -1,9 +1,9 @@
 package com.github.aclijpio.docuflow.entities.money;
 
+import com.github.aclijpio.docuflow.entities.clients.Client;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.pio.aclij.documents.financial.entities.clients.Client;
 
 @NoArgsConstructor
 @Data

@@ -1,21 +1,15 @@
 package com.github.aclijpio.docuflow.entities;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.github.aclijpio.docuflow.services.process.annotations.DocumentForm;
+import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import javafx.scene.control.TextField;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.pio.aclij.documents.controllers.helpers.ParentDocumentHelper;
-import ru.pio.aclij.documents.financial.entities.clients.Employee;
-import ru.pio.aclij.documents.financial.entities.clients.User;
-import ru.pio.aclij.documents.financial.noderegistry.NodeRegistry;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
@@ -23,24 +17,24 @@ import java.util.Optional;
 @Entity
 @Table(name = "payments")
 @JsonTypeName("payment")
+@DocumentForm("Платёжка")
 public class Payment extends Document {
-    @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
+    @DocumentProperty("Сотрудник")
+    private String employee;
 
-    public Payment(String number, LocalDate date, User user, double amountOfMoney, Employee employee) {
+    public Payment(String number, LocalDate date, String user, double amountOfMoney, String employee) {
         super(number, date, user, amountOfMoney);
         this.employee = employee;
     }
 
-    public Payment(Long id, String number, LocalDate date, User user, double amountOfMoney, Employee employee) {
+    public Payment(Long id, String number, LocalDate date, String user, double amountOfMoney, String employee) {
         super(id, number, date, user, amountOfMoney);
         this.employee = employee;
     }
 
     public Payment() {
     }
-
+/*
     @Override
     public NodeRegistry toNodeTree(ParentDocumentHelper helper) {
         NodeRegistry nodeRegistry = super.toNodeTree(helper);
@@ -67,5 +61,5 @@ public class Payment extends Document {
             this.employee = employeeOptional.get();
         }
         return this;
-    }
+    }*/
 }

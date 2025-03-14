@@ -1,28 +1,16 @@
 package com.github.aclijpio.docuflow.entities;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.github.aclijpio.docuflow.entities.money.Currency;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.pio.aclij.documents.controllers.exceptions.CurrencyDefaultNotSetException;
-import ru.pio.aclij.documents.controllers.helpers.ParentDocumentHelper;
-import ru.pio.aclij.documents.financial.customcontrols.financialControls.FinancialControlsFactory;
-import ru.pio.aclij.documents.financial.entities.clients.Counterparty;
-import ru.pio.aclij.documents.financial.entities.clients.Employee;
-import ru.pio.aclij.documents.financial.entities.clients.User;
-import ru.pio.aclij.documents.financial.entities.money.Currency;
-import ru.pio.aclij.documents.financial.entities.money.CurrencyCode;
-import ru.pio.aclij.documents.financial.noderegistry.NodeRegistry;
-import ru.pio.aclij.documents.financial.noderegistry.exceptions.NodeUnavailableException;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
@@ -32,9 +20,7 @@ import java.util.Optional;
 @JsonTypeName("paymentRequest")
 public class PaymentRequest extends Document {
 
-    @ManyToOne()
-    @JoinColumn(name = "counterparty_id", nullable = false)
-    private Counterparty counterparty;
+    private String counterparty;
 
     @ManyToOne()
     @JoinColumn(name = "currency_id", nullable = false)
@@ -42,14 +28,14 @@ public class PaymentRequest extends Document {
 
     private double commission;
 
-    public PaymentRequest(String number, LocalDate date, User user, double amountOfMoney, Counterparty counterparty, Currency currency, double commission) {
+    public PaymentRequest(String number, LocalDate date, String user, double amountOfMoney, String counterparty, Currency currency, double commission) {
         super(number, date, user, amountOfMoney);
         this.counterparty = counterparty;
         this.currency = currency;
         this.commission = commission;
     }
 
-    public PaymentRequest(Long id, String number, LocalDate date, User user, double amountOfMoney, Counterparty counterparty, Currency currency, double commission) {
+    public PaymentRequest(Long id, String number, LocalDate date, String user, double amountOfMoney, String counterparty, Currency currency, double commission) {
         super(id, number, date, user, amountOfMoney);
         this.counterparty = counterparty;
         this.currency = currency;
@@ -58,7 +44,7 @@ public class PaymentRequest extends Document {
 
     public PaymentRequest() {
     }
-
+/*
     @Override
     public NodeRegistry toNodeTree(ParentDocumentHelper helper) {
         NodeRegistry nodeRegistry =  super.toNodeTree(helper);
@@ -128,5 +114,5 @@ public class PaymentRequest extends Document {
 
 
         return this;
-    }
+    }*/
 }

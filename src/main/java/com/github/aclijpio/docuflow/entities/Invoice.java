@@ -1,24 +1,15 @@
 package com.github.aclijpio.docuflow.entities;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.github.aclijpio.docuflow.entities.money.Currency;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import ru.pio.aclij.documents.controllers.helpers.ParentDocumentHelper;
-import ru.pio.aclij.documents.financial.entities.clients.User;
-import ru.pio.aclij.documents.financial.entities.money.Currency;
-import ru.pio.aclij.documents.financial.entities.money.CurrencyCode;
-import ru.pio.aclij.documents.financial.entities.money.Product;
-import ru.pio.aclij.documents.financial.noderegistry.NodeRegistry;
-import ru.pio.aclij.documents.financial.noderegistry.exceptions.NodeUnavailableException;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
@@ -30,18 +21,15 @@ public class Invoice extends Document {
     @ManyToOne()
     @JoinColumn(name = "currency_id", nullable = false)
     private Currency currency;
+    private String product;
 
-    @ManyToOne()
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
-
-    public Invoice(String number, LocalDate date, User user, double amountOfMoney, Currency currency, Product product) {
+    public Invoice(String number, LocalDate date, String user, double amountOfMoney, Currency currency, String product) {
         super(number, date, user, amountOfMoney);
         this.currency = currency;
         this.product = product;
     }
 
-    public Invoice(Long id, String number, LocalDate date, User user, double amountOfMoney, Currency currency, Product product) {
+    public Invoice(Long id, String number, LocalDate date, String user, double amountOfMoney, Currency currency, String product) {
         super(id, number, date, user, amountOfMoney);
         this.currency = currency;
         this.product = product;
@@ -49,7 +37,7 @@ public class Invoice extends Document {
 
     public Invoice() {
     }
-
+/*
     @Override
     public NodeRegistry toNodeTree(ParentDocumentHelper helper) {
 
@@ -87,6 +75,6 @@ public class Invoice extends Document {
             this.product = product.get();
         }
 
-        return this;
-    }
+        return this;*/
+
 }

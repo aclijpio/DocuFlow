@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.URL?>
+<HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="525.0" prefWidth="1004.0" styleClass="financial_menu_container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox onMouseClicked="#checkbox" prefHeight="200.0" styleClass="document_log" stylesheets="@Styles/menu.css" HBox.hgrow="ALWAYS">
+         <children>
+            <CheckBox mnemonicParsing="false" onAction="#checkbox">
+               <padding>
+                  <Insets bottom="5.0" left="8.0" />
+               </padding>
+            </CheckBox>
+            <ListView fx:id="documentList" prefHeight="431.0" prefWidth="776.0" VBox.vgrow="ALWAYS" />
+         </children>
+      </VBox>
+      <VBox alignment="TOP_RIGHT" minWidth="-Infinity" prefWidth="200.0" styleClass="right_bar" HBox.hgrow="SOMETIMES">
+         <children>
+            <VBox alignment="TOP_CENTER" minWidth="-Infinity" styleClass="document_right_box" stylesheets="@Styles/menu.css" VBox.vgrow="ALWAYS">
+               <children>
+                  <VBox alignment="TOP_RIGHT" minWidth="-Infinity" styleClass="document_buttons_container" stylesheets="@Styles/menu.css" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#showInvoiceForm" text="Накладная">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#showPaymentForm" text="Платёжка">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#showPaymentRequest" text="Заявка на оплату">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </VBox>
+                  <VBox alignment="BOTTOM_RIGHT" styleClass="document_buttons_container" stylesheets="@Styles/menu.css" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#save" text="Сохранить">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#load" text="Загрузить">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#showDocument" text="Просмотр">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#delete" text="Удалить">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+            <BorderPane VBox.vgrow="NEVER">
+               <center>
+                  <Button mnemonicParsing="false" onAction="#close" text="Выход" BorderPane.alignment="CENTER" />
+               </center>
+               <padding>
+                  <Insets bottom="20.0" top="20.0" />
+               </padding>
+            </BorderPane>
+         </children>
+         <stylesheets>
+            <URL value="@Styles/menu.css" />
+            <URL value="@Styles/guide.css" />
+         </stylesheets>
+         <padding>
+            <Insets bottom="5.0" left="6.0" right="5.0" top="10.0" />
+         </padding>
+      </VBox>
+   </children>
+   <stylesheets>
+      <URL value="@Styles/menu.css" />
+      <URL value="@Styles/guide.css" />
+   </stylesheets>
+</HBox>

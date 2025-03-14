@@ -2,17 +2,14 @@ package com.github.aclijpio.docuflow.entities;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.github.aclijpio.docuflow.services.process.annotations.DocumentId;
+import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;
+import com.github.aclijpio.docuflow.services.process.annotations.PropertyType;
 import jakarta.persistence.*;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.pio.aclij.documents.controllers.helpers.ParentDocumentHelper;
-import ru.pio.aclij.documents.financial.entities.clients.User;
-import ru.pio.aclij.documents.financial.noderegistry.NodeRegistry;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @Data
 @Entity
@@ -25,26 +22,25 @@ import java.util.Optional;
         @JsonSubTypes.Type(value = PaymentRequest.class, name = "paymentRequest")
 })
 
-public abstract class Document implements ParentDocument {
-
-
+public abstract class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @DocumentId
     private Long id;
 
+    @DocumentProperty("Номер")
     @Column(unique = true, nullable = false, updatable = false)
     private String number;
-
+    @DocumentProperty(type = PropertyType.DATE, value = "Дата")
     private LocalDate date;
-
-    @ManyToOne()
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @DocumentProperty("Пользователь")
+    private String user;
 
     @Column(nullable = false)
-    private double amountOfMoney;
+    @DocumentProperty("Сумма")
+    private Double amountOfMoney;
 
-    public Document(String number, LocalDate date, User user, double amountOfMoney) {
+    public Document(String number, LocalDate date, String user, double amountOfMoney) {
         this.number = number;
         this.date = date;
         this.user = user;
@@ -54,7 +50,7 @@ public abstract class Document implements ParentDocument {
     public Document() {
     }
 
-    @Override
+/*    @Override
     public NodeRegistry toNodeTree(ParentDocumentHelper helper) {
 
         NodeRegistry nodeRegistry = new NodeRegistry();
@@ -86,7 +82,7 @@ public abstract class Document implements ParentDocument {
         }
         this.amountOfMoney = Double.parseDouble(nodeRegistry.getNode(TextField.class).getText());
         return this;
-    }
+    }*/
 
 
 
