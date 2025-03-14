@@ -1,0 +1,11 @@
+datasource:
+  driver: org.postgresql.Driver
+  url: jdbc:postgresql://localhost:5434/taskMaster
+  username: postgres
+  password: postgres
+files:
+  menu: financial-menu.fxml
+  entity: entity.fxml
+financial:
+  defaultCurrency: EUR
+  commission: 5

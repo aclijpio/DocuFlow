@@ -1,0 +1,15 @@
+package com.github.aclijpio.docuflow.config.source;
+
+import lombok.Getter;
+import ru.pio.aclij.documents.financial.entities.money.CurrencyCode;
+
+public class FinancialConfig {
+
+    private String defaultCurrency;
+    @Getter
+    private double commission;
+
+    public CurrencyCode getDefaultCurrency() {
+        return CurrencyCode.valueOf(defaultCurrency);
+    }
+}
