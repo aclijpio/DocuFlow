@@ -14,16 +14,19 @@
 .document_right_box {
     -fx-alignment: center;
 }
-.document_buttons_container {
+.buttons_container {
     -fx-alignment: center;
     -fx-spacing: 20;
+}
+.documents_buttons_container {
+    -fx-background-color: -document_buttons-background;
 }
 
 .exit_container {
     -fx-alignment: center;
 }
 .right_bar .button {
-    -fx-pref-width: 120;
+    -fx-pref-width: 150;
     -fx-pref-height: 25;
     -fx-background-radius: 0;
 }

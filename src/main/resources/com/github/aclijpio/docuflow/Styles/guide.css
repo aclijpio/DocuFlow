@@ -1,4 +1,5 @@
 .root {
-    -menu-border-color: black;
+    -menu-border-color: #2b6165;
     -right_bar-background: #828282;
+    -document_buttons-background: #686767;
 }

@@ -3,44 +3,35 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.text.Font?>
+<?import java.lang.String?>
 <?import java.net.URL?>
-<HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="525.0" prefWidth="1004.0" styleClass="financial_menu_container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="449.0" minWidth="822.0" prefHeight="449.0" prefWidth="822.0" styleClass="financial_menu_container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <VBox onMouseClicked="#checkbox" prefHeight="200.0" styleClass="document_log" stylesheets="@Styles/menu.css" HBox.hgrow="ALWAYS">
+      <VBox onMouseClicked="#checkbox" styleClass="document_log" stylesheets="@Styles/menu.css" HBox.hgrow="ALWAYS">
          <children>
             <CheckBox mnemonicParsing="false" onAction="#checkbox">
                <padding>
                   <Insets bottom="5.0" left="8.0" />
                </padding>
             </CheckBox>
-            <ListView fx:id="documentList" prefHeight="431.0" prefWidth="776.0" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="documentList" minWidth="-Infinity" prefHeight="431.0" prefWidth="300.0" VBox.vgrow="ALWAYS" />
          </children>
       </VBox>
       <VBox alignment="TOP_RIGHT" minWidth="-Infinity" prefWidth="200.0" styleClass="right_bar" HBox.hgrow="SOMETIMES">
          <children>
             <VBox alignment="TOP_CENTER" minWidth="-Infinity" styleClass="document_right_box" stylesheets="@Styles/menu.css" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox alignment="TOP_RIGHT" minWidth="-Infinity" styleClass="document_buttons_container" stylesheets="@Styles/menu.css" VBox.vgrow="ALWAYS">
-                     <children>
-                        <Button mnemonicParsing="false" onAction="#showInvoiceForm" text="Накладная">
-                           <font>
-                              <Font size="11.0" />
-                           </font>
-                        </Button>
-                        <Button mnemonicParsing="false" onAction="#showPaymentForm" text="Платёжка">
-                           <font>
-                              <Font size="11.0" />
-                           </font>
-                        </Button>
-                        <Button mnemonicParsing="false" onAction="#showPaymentRequest" text="Заявка на оплату">
-                           <font>
-                              <Font size="11.0" />
-                           </font>
-                        </Button>
-                     </children>
+                  <VBox fx:id="documentContainer" alignment="TOP_RIGHT" minWidth="-Infinity" stylesheets="@Styles/menu.css" VBox.vgrow="NEVER">
+                     <padding>
+                        <Insets bottom="20.0" top="10.0" />
+                     </padding>
+                     <styleClass>
+                        <String fx:value="buttons_container" />
+                        <String fx:value="documents_buttons_container" />
+                     </styleClass>
                   </VBox>
-                  <VBox alignment="BOTTOM_RIGHT" styleClass="document_buttons_container" stylesheets="@Styles/menu.css" VBox.vgrow="ALWAYS">
+                  <VBox alignment="BOTTOM_RIGHT" minWidth="-Infinity" styleClass="buttons_container" stylesheets="@Styles/menu.css" VBox.vgrow="ALWAYS">
                      <children>
                         <Button mnemonicParsing="false" onAction="#save" text="Сохранить">
                            <font>
@@ -80,7 +71,7 @@
             <URL value="@Styles/guide.css" />
          </stylesheets>
          <padding>
-            <Insets bottom="5.0" left="6.0" right="5.0" top="10.0" />
+            <Insets bottom="10.0" left="6.0" right="5.0" top="10.0" />
          </padding>
       </VBox>
    </children>

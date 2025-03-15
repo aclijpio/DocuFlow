@@ -1,6 +1,6 @@
 package com.github.aclijpio.docuflow.controllers;
 
-import com.github.aclijpio.docuflow.services.DocumentServiceImpl;
+import com.github.aclijpio.docuflow.services.impls.DocumentServiceImpl;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

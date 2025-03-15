@@ -1,5 +1,6 @@
-package com.github.aclijpio.docuflow.services;
+package com.github.aclijpio.docuflow.services.impls;
 
+import com.github.aclijpio.docuflow.services.DocumentService;
 import com.github.aclijpio.docuflow.services.process.DocumentField;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
 import javafx.scene.Node;
@@ -32,8 +33,6 @@ public class DocumentServiceImpl implements DocumentService {
             };
         }).toList();
     }
-
-
     public Node createField(FieldCreatorFunction creator, DocumentField field) {
         try {
             return creator.apply(field);
@@ -41,7 +40,6 @@ public class DocumentServiceImpl implements DocumentService {
             throw new RuntimeException(e);
         }
     }
-
     @FunctionalInterface
     private interface FieldCreatorFunction{
         Node apply(DocumentField field) throws IllegalAccessException;
@@ -57,14 +55,14 @@ public class DocumentServiceImpl implements DocumentService {
         public static Node createDoubleField(DocumentField documentField) throws IllegalAccessException {
             Label label = new Label(documentField.getName());
             TextField textField = new TextField((String) documentField.getValue(documentForward.getDocument()));
-            textField.setTextFormatter(TextFormatters.doubleTextFormatter);
+            textField.setTextFormatter(TextFormatters.createDoubleFormatter());
             return hCombine(label, textField);
         }
 
         public static Node createIntegerField(DocumentField documentField) throws IllegalAccessException {
             Label label = new Label(documentField.getName());
             TextField textField = new TextField((String) documentField.getValue(documentForward.getDocument()));
-            textField.setTextFormatter(TextFormatters.integerTextFormatter);
+            textField.setTextFormatter(TextFormatters.createIntegerFormatter());
             return hCombine(label, textField);
         }
 
@@ -77,9 +75,6 @@ public class DocumentServiceImpl implements DocumentService {
             return hCombine(label, datePicker);
         }
 
-
-
-
         private static HBox hCombine(Node... nodes){
             return new HBox(
                     nodes
@@ -87,33 +82,37 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         private static class TextFormatters{
-            private final static TextFormatter<Integer> integerTextFormatter = new TextFormatter<>(
-                    new IntegerStringConverter(),
-                    0,
-                    change -> {
-                        String newText = change.getControlNewText();
-                        if (newText.matches("\\d*"))
-                            return change;
-
-                        return null;
-                    }
-            );
-            private final static TextFormatter<Double> doubleTextFormatter = new TextFormatter<>(
-                    new DoubleStringConverter(),
-                    0.0,
-                    change -> {
-                        String newText = change.getControlNewText();
-                        if (newText.matches("-?\\d*(\\.\\d*)?")) {
-                            try {
-                                Double.parseDouble(newText);
+            private static TextFormatter<Integer> createIntegerFormatter() {
+                return  new TextFormatter<>(
+                        new IntegerStringConverter(),
+                        0,
+                        change -> {
+                            String newText = change.getControlNewText();
+                            if (newText.matches("\\d*"))
                                 return change;
-                            } catch (NumberFormatException e) {
-                                return null;
-                            }
+
+                            return null;
                         }
-                        return null;
-                    }
-            );
+                );
+            }
+            private static TextFormatter<Double> createDoubleFormatter() {
+                return new TextFormatter<>(
+                        new DoubleStringConverter(),
+                        0.0,
+                        change -> {
+                            String newText = change.getControlNewText();
+                            if (newText.matches("-?\\d*(\\.\\d*)?")) {
+                                try {
+                                    Double.parseDouble(newText);
+                                    return change;
+                                } catch (NumberFormatException e) {
+                                    return null;
+                                }
+                            }
+                            return null;
+                        }
+                );
+            }
         }
     }
 
