@@ -1,6 +1,6 @@
 package com.github.aclijpio.docuflow.controllers;
 
-import com.github.aclijpio.docuflow.services.DocumentService;
+import com.github.aclijpio.docuflow.services.DocumentServiceImpl;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
 
 public class DocumentController implements Initializable {
 
-    private final DocumentService service;
+    private final DocumentServiceImpl service;
 
     @Getter
     @FXML
@@ -29,7 +29,7 @@ public class DocumentController implements Initializable {
     private Button deleteButton;
 
     public DocumentController(DocumentForward documentForward) {
-        this.service = new DocumentService(documentForward);
+        this.service = new DocumentServiceImpl(documentForward);
     }
 
     @Override
