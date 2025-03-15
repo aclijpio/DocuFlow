@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.github.aclijpio.docuflow.services.PropertyType;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentForm;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.EqualsAndHashCode;
@@ -16,7 +15,6 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
-@Entity
 @JsonTypeName("invoice")
 @DocumentForm("Накладная")
 public class Invoice extends Document {
@@ -28,12 +26,6 @@ public class Invoice extends Document {
     @DocumentProperty("Продукт")
     private String product;
 
-    public Invoice(Long id, String number, LocalDate date, String user, Double amountOfMoney, CurrencyCode currencyType, Double exchangeCurrency, String product) {
-        super(id, number, date, user, amountOfMoney);
-        this.currencyType = currencyType;
-        this.exchangeCurrency = exchangeCurrency;
-        this.product = product;
-    }
 
     public Invoice(String number, LocalDate date, String user, double amountOfMoney, CurrencyCode currencyType, Double exchangeCurrency, String product) {
         super(number, date, user, amountOfMoney);

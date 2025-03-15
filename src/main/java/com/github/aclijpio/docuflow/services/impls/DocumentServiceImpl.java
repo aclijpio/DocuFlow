@@ -38,7 +38,7 @@ public class DocumentServiceImpl implements DocumentService {
         VBox form = (VBox) box;
         for (int i = 0; i < fields.size(); i++){
             DocumentField field = fields.get(i);
-            HBox hBox = (HBox)form.getChildren().get(i + 1);
+            HBox hBox = (HBox)form.getChildren().get(i);
             Node node = hBox.getChildren().get(1);
             System.out.println(node);
             switch (field.getType()){

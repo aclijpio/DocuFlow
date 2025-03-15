@@ -1,23 +1,43 @@
 package com.github.aclijpio.docuflow.services.impls;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.aclijpio.docuflow.controllers.DocumentController;
 import com.github.aclijpio.docuflow.controllers.FinancialMenuController;
 import com.github.aclijpio.docuflow.entities.Document;
+import com.github.aclijpio.docuflow.entities.DocumentItem;
 import com.github.aclijpio.docuflow.services.FinancialMenuService;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
 import com.github.aclijpio.docuflow.services.process.DocumentProcessor;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ListView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class FinancialMenuServiceImpl implements FinancialMenuService {
     private static FinancialMenuController controller;
+    private ObjectMapper objectMapper;
 
     public FinancialMenuServiceImpl(FinancialMenuController controller) {
         FinancialMenuServiceImpl.controller = controller;
@@ -28,6 +48,7 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
      * @return Список кнопок
      */
     public List<Button> createDocumentActionButtons(URL resourcePath, Document ... documents){
+        this.objectMapper = createStandartObjectMapper(documents);
         return Arrays.stream(documents)
                 .map(DocumentProcessor::forwardProcess)
                 .map(forward -> createActionButton(forward, resourcePath))
@@ -48,14 +69,18 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
 
         return button;
     }
+    private ObjectMapper createStandartObjectMapper(Document ... documents){
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerSubtypes(Arrays.stream(documents).map(Document::getClass).toArray(Class[]::new));
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.WRAPPER_ARRAY);
+        return objectMapper;
+    }
 
     private Stage createDocumentStage(DocumentForward documentForward, URL resourcePath) {
-
         FXMLLoader fxmlLoader = new FXMLLoader(resourcePath);
         DocumentController documentController = new DocumentController(documentForward);
-
-
-
         fxmlLoader.setController(documentController);
         try {
             Scene scene = new Scene(fxmlLoader.load());
@@ -63,7 +88,7 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
 
             documentController.complete.setOnAction(event -> {
                 DocumentForward forward = documentController.getDocument();
-                controller.documentList.getItems().add(new FinancialMenuController.DocumentItem(forward));
+                controller.documentList.getItems().add(new DocumentItem(forward));
                 stage.close();
             });
             stage.setMinWidth(scene.getWidth());
@@ -74,9 +99,132 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load document form " , e);
         }
+    }
 
+    @Override
+    public void saveToJsonFile(List<Document> documentList){
+        if (!documentList.isEmpty()) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setInitialFileName("documents.json");
 
+            File createdFile = fileChooser.showSaveDialog(null);
 
+            if (createdFile != null) {
+                try (FileWriter fileWriter = new FileWriter(createdFile)) {
+
+                    this.objectMapper.writeValue(fileWriter, documentList);
+                } catch (IOException e) {
+                    callErrorAlert("Не удалось сохранить в файл.");
+                }
+            }
+        }
+    }
+    @Override
+    public List<Document> loadDocumentsFromJsonFile(){
+
+        FileChooser fileChooser = new FileChooser();
+        File selectedFile = fileChooser.showOpenDialog(null);
+
+        if (selectedFile != null && selectedFile.exists()){
+            try (FileReader fileReader = new FileReader(selectedFile)){
+                List<Object> objects = objectMapper.readValue(fileReader, new TypeReference<List<Object>>() {});
+                List<Document> documents = new ArrayList<>();
+                for (Object obj : objects) {
+                    Document document = (Document) obj;
+                    documents.add(document);
+                }
+                return documents;
+            } catch (StreamReadException e) {
+                System.out.println("StreamReadException");
+                throw new RuntimeException(e);
+            } catch (DatabindException e) {
+                System.out.println("DatabindException");
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                System.out.println("IOException");
+                throw new RuntimeException(e);
+            }
+
+        }
+        return List.of();
+    }
+
+    public void offerSimilar(List<DocumentItem> items){
+        ListView<DocumentItem> listView = controller.documentList;
+        ObservableList<DocumentItem> observableList =  listView.getItems();
+        boolean replaceAllFlag = false;
+        for (DocumentItem item : items) {
+            try {
+                Optional<DocumentItem> current = isEquals(item, observableList);
+                if (current.isPresent()) {
+                    DocumentItem document = current.get();
+                    ConfirmationCode code;
+                    if (replaceAllFlag)
+                        code = ConfirmationCode.REPLACE;
+                    else
+                        code = callConfirmationAlert(document, item);
+                    if (code == ConfirmationCode.REPLACE) {
+                        int index = observableList.indexOf(item);
+                        observableList.set(index, item);
+                    } else if (code == ConfirmationCode.REPLACE_ALL) {
+                        replaceAllFlag = true;
+                        int index = observableList.indexOf(document);
+                        observableList.set(index, item);
+                    } else if (code == ConfirmationCode.SKIP) continue;
+                    else if (code == ConfirmationCode.CLOSE) break;
+                } else
+                    observableList.add(item);
+            } catch (NullPointerException _) {
+                continue;
+            }
+        }
+    }
+    private Optional<DocumentItem> isEquals(DocumentItem item, ObservableList<DocumentItem> observableList){
+        if (item.getForward().getDocument().getNumber() == null) {
+            callErrorAlert(String.format("Загружаем объект не имеет номера документа! \n\t%s",
+                    FinancialMenuController.getString(item)
+            ));
+            throw new NullPointerException("Document number is null");
+        }
+        for (DocumentItem document: observableList) {
+            String current = document.getForward().getDocument().getNumber();
+            String forReplace = item.getForward().getDocument().getNumber();
+
+            if(forReplace.equals(current))  return Optional.of(document);
+        }
+        return Optional.empty();
+    }
+    private static void callErrorAlert(String s){
+        Alert alert =  new Alert(Alert.AlertType.ERROR, s);
+        alert.show();
+    }
+    private static ConfirmationCode callConfirmationAlert(DocumentItem current, DocumentItem forReplace){
+        Alert alert =  new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Документ уже существует");
+        alert.setHeaderText(String.format("Такой документ уже есть в списке:\n\t%s\n\t%s",
+                FinancialMenuController.getString(current),
+                FinancialMenuController.getString(forReplace)
+        ));
+        alert.setContentText("Выберите действия");
+
+        ButtonType replaceButton =  new ButtonType("Заменить");
+        ButtonType replaceAllButton =  new ButtonType("Заменить все");
+        ButtonType skipButton =  new ButtonType("Пропустить");
+        alert.getButtonTypes().setAll(replaceButton, replaceAllButton, skipButton);
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.isPresent()) {
+            if (result.get() == replaceButton) return ConfirmationCode.REPLACE;
+            if (result.get() == replaceAllButton) return ConfirmationCode.REPLACE_ALL;
+            if (result.get() == skipButton) return ConfirmationCode.SKIP;
+        }
+        return ConfirmationCode.CLOSE;
+    }
+    private enum ConfirmationCode{
+        REPLACE,
+        REPLACE_ALL,
+        SKIP,
+        CLOSE;
     }
 
 }

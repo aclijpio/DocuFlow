@@ -3,17 +3,13 @@ package com.github.aclijpio.docuflow.entities;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.aclijpio.docuflow.services.PropertyType;
-import com.github.aclijpio.docuflow.services.process.annotations.DocumentId;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
-@Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @AllArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
@@ -23,20 +19,14 @@ import java.time.LocalDate;
 })
 
 public abstract class Document {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @DocumentId("Идентификатор")
-    private Long id;
 
     @DocumentProperty("Номер")
-    @Column(unique = true, nullable = false, updatable = false)
     private String number;
     @DocumentProperty(type = PropertyType.DATE, value = "Дата")
     private LocalDate date;
     @DocumentProperty("Пользователь")
     private String user;
 
-    @Column(nullable = false)
     @DocumentProperty(type = PropertyType.DOUBLE, value = "Сумма")
     private Double amountOfMoney;
 
@@ -50,20 +40,4 @@ public abstract class Document {
     public Document() {
     }
 
-
-    @Override
-    public String toString() {
-        String name = switch (this.getClass().getSimpleName()){
-            case "Invoice" -> "Накладная";
-            case "Payment" -> "Платёжка";
-            case "PaymentRequest" -> "Заявка на оплату";
-
-            default -> throw new IllegalStateException("Unexpected value: " + this.getClass().getSimpleName());
-        };
-
-        return String.format(
-                "%s от %s номер %s",
-                name, date, number
-        );
-    }
 }

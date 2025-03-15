@@ -21,11 +21,7 @@ public class DocumentProcessor {
         }
         return forward;
     }
-    public static Document backwardProcess(DocumentForward forward) {
-        Class<?> clazz = forward.getDocument().getClass();
 
-        return forward.getDocument();
-    }
 
     private static void processFields(Class<?> clazz, DocumentForward forward) {
         Class<?> superClass = clazz.getSuperclass();

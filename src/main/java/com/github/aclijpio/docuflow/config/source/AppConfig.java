@@ -10,6 +10,5 @@ import lombok.ToString;
 @NoArgsConstructor
 @Data
 public class AppConfig {
-    private Datasource datasource;
     private Files files;
 }

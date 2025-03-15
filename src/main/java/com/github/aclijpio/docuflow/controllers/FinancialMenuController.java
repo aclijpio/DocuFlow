@@ -1,11 +1,12 @@
 package com.github.aclijpio.docuflow.controllers;
 
 import com.github.aclijpio.docuflow.entities.Document;
+import com.github.aclijpio.docuflow.entities.DocumentItem;
 import com.github.aclijpio.docuflow.services.FinancialMenuService;
 import com.github.aclijpio.docuflow.services.impls.FinancialMenuServiceImpl;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
+import com.github.aclijpio.docuflow.services.process.DocumentProcessor;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -14,10 +15,10 @@ import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FinancialMenuController {
     @FXML
@@ -54,29 +55,26 @@ public class FinancialMenuController {
                     public String toString(DocumentItem documentForward) {
                         return getString(documentForward);
                     }
-
                     @Override
                     public DocumentItem fromString(String s) {
                         return null;
                     }
-
-                    public String getString(DocumentItem forward){
-                        Document document = forward.getForward().getDocument();
-                        return String.format(
-                                "%s от %s номер %s",
-                                forward.getForward().getDocumentName(),
-                                document.getDate(), document.getNumber()
-                        );
-                    }
                 }
         ));
-
-
         documentContainer.getChildren().addAll(
                 service.createDocumentActionButtons(
                         resourcePath,
                         documents
                 )
+        );
+    }
+
+    public static String getString(DocumentItem forward){
+        Document document = forward.getForward().getDocument();
+        return String.format(
+                "%s от %s номер %s",
+                forward.getForward().getDocumentName(),
+                document.getDate(), document.getNumber()
         );
     }
     @FXML
@@ -93,12 +91,19 @@ public class FinancialMenuController {
 
     @FXML
     public void save() {
-
+        this.service.saveToJsonFile(
+                findSelectedDocumentItems(this.documentList)
+        );
     }
 
     @FXML
     public void load() {
-        // Логика для загрузки
+        List<DocumentItem> items = this.service.loadDocumentsFromJsonFile().stream()
+                .map(DocumentProcessor::forwardProcess)
+                .map(DocumentItem::new)
+                .toList();
+        service.offerSimilar(items);
+
     }
 
     @FXML
@@ -116,21 +121,13 @@ public class FinancialMenuController {
         // Логика для закрытия приложения
     }
 
-    @Getter
-    @Setter
-    public static class DocumentItem{
-
-        private final DocumentForward forward;
-        private final BooleanProperty property = new SimpleBooleanProperty(false);
-        public DocumentItem(DocumentForward forward) {
-            this.forward = forward;
-        }
-        public void unselect(){
-            property.setValue(false);
-        }
-        public void select(){
-            property.setValue(true);
-        }
-
+    public List<Document> findSelectedDocumentItems(ListView<DocumentItem> documentList){
+        return documentList.getItems().stream()
+                .filter(DocumentItem::isSelected)
+                .map(DocumentItem::getForward)
+                .map(DocumentForward::getDocument)
+                .collect(Collectors.toList());
     }
+
+
 }
