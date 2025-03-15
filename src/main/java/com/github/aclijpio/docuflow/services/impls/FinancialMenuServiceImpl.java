@@ -7,7 +7,6 @@ import com.github.aclijpio.docuflow.entities.Document;
 import com.github.aclijpio.docuflow.services.FinancialMenuService;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
 import com.github.aclijpio.docuflow.services.process.DocumentProcessor;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

@@ -7,7 +7,6 @@ import com.github.aclijpio.docuflow.services.process.DocumentField;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
 import com.github.aclijpio.docuflow.services.process.DocumentIdField;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
