@@ -12,6 +12,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import java.net.URL;
+
 
 public class FinancialApplication extends Application{
 
@@ -22,16 +24,16 @@ public class FinancialApplication extends Application{
         AppConfig appConfig = ConfigLoader.loadConfig();
 
         FXMLLoader fxmlLoader = new FXMLLoader(FinancialApplication.class.getResource(appConfig.getFiles().getMenu()));
-        FinancialMenuController controller = new FinancialMenuController( appConfig.getFiles());
+        FinancialMenuController controller = new FinancialMenuController();
 
         fxmlLoader.setController(controller);
         HBox root = fxmlLoader.load();
 
-        Invoice invoice = new Invoice();
-        invoice.setId(1313L);
+        URL documentPath  = FinancialApplication.class.getResource(appConfig.getFiles().getEntity());
 
         controller.initializeDocuments(
-                invoice,
+                documentPath,
+                new Invoice(),
                 new Payment(),
                 new PaymentRequest()
         );

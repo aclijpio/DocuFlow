@@ -6,11 +6,11 @@
 <?import javafx.scene.text.Font?>
 <?import java.lang.String?>
 <?import java.net.URL?>
-<HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="449.0" minWidth="822.0" prefHeight="449.0" prefWidth="822.0" styleClass="financial_menu_container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="449.0" minWidth="822.0" prefHeight="449.0" prefWidth="822.0" styleClass="financial_menu_container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" >
    <children>
-      <VBox onMouseClicked="#checkbox" styleClass="document_log" stylesheets="@Styles/menu.css" HBox.hgrow="ALWAYS">
+      <VBox  styleClass="document_log" stylesheets="@Styles/menu.css" HBox.hgrow="ALWAYS">
          <children>
-            <CheckBox mnemonicParsing="false" onAction="#checkbox">
+            <CheckBox fx:id="mainCheckboxControl" mnemonicParsing="false" onAction="#checkbox">
                <padding>
                   <Insets bottom="5.0" left="8.0" />
                </padding>

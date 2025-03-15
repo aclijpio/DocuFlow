@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 public class DocumentController implements Initializable {
 
     private final DocumentService service;
+    @FXML
     public Button complete;
 
     @Getter
@@ -45,18 +46,16 @@ public class DocumentController implements Initializable {
     }
 
 
-    private void formToDocument() throws IllegalAccessException {
+    public DocumentForward getDocument()  {
 
-        service.formToDocument(form);
-
-
-
+        try {
+            return service.formToDocument(form);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void onComplete(ActionEvent actionEvent) throws IllegalAccessException {
-
-        formToDocument();
-
     }
 
 

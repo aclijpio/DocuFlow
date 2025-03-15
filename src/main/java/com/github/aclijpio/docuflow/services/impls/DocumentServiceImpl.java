@@ -25,7 +25,14 @@ public class DocumentServiceImpl implements DocumentService {
         DocumentServiceImpl.documentForward = documentForward;
     }
 
-    public Document formToDocument(Node box) throws IllegalAccessException {
+    /**
+     * Меняет значения переменных документа на основе полей формы.
+     * Типы полей указываются в аннотации DocumentProperty, чтобы правильно идентифицировать Node`ы
+     * @param box форма (form)
+     * @return документ
+     */
+
+    public DocumentForward formToDocument(Node box) throws IllegalAccessException {
         List<DocumentField> fields = documentForward.getFields();
         Document document = documentForward.getDocument();
         VBox form = (VBox) box;
@@ -51,6 +58,7 @@ public class DocumentServiceImpl implements DocumentService {
                     documentForward.setValueByIndex(i, value);
                 }
                 case ENUM -> {
+                    @SuppressWarnings("unchecked")
                     ComboBox<CurrencyCode> comboBox = (ComboBox<CurrencyCode>) node;
                     CurrencyCode currencyCode = comboBox.getValue();
                     documentForward.setValueByIndex(i, currencyCode);
@@ -62,9 +70,14 @@ public class DocumentServiceImpl implements DocumentService {
             System.out.println(field.getValue(document));
         }
 
-        return document;
+        return documentForward;
     }
 
+    /**
+     * Создает поля формы на основе метаданных и переменных документа.
+     * Типы полей указываются в аннотации DocumentProperty, чтобы создать соответствующие Node`ы
+     * @return список полей в виде Node
+     */
     public List<Node> createFields() {
 
         List<DocumentField> fields = documentForward.getFields();
@@ -102,7 +115,9 @@ public class DocumentServiceImpl implements DocumentService {
         Node apply(DocumentField field) throws IllegalAccessException;
     }
 
-
+    /**
+     * Готовые решения создания полей (Node элементов)
+     */
     private static class FieldCreator {
         public static Node createTextField(DocumentField documentField) throws IllegalAccessException {
             Label label = new Label(documentField.getName());
