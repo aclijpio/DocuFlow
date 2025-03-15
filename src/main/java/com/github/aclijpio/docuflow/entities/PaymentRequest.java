@@ -1,7 +1,6 @@
 package com.github.aclijpio.docuflow.entities;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.github.aclijpio.docuflow.config.source.CurrencyCode;
 import com.github.aclijpio.docuflow.services.PropertyType;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentForm;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;

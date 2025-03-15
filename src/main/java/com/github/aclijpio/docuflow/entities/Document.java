@@ -25,7 +25,7 @@ import java.time.LocalDate;
 public abstract class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @DocumentId
+    @DocumentId("Идентификатор")
     private Long id;
 
     @DocumentProperty("Номер")
@@ -37,7 +37,7 @@ public abstract class Document {
     private String user;
 
     @Column(nullable = false)
-    @DocumentProperty("Сумма")
+    @DocumentProperty(type = PropertyType.DOUBLE, value = "Сумма")
     private Double amountOfMoney;
 
     public Document(String number, LocalDate date, String user, double amountOfMoney) {

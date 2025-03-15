@@ -6,6 +6,3 @@ datasource:
 files:
   menu: financial-menu.fxml
   entity: entity.fxml
-financial:
-  defaultCurrency: EUR
-  commission: 5

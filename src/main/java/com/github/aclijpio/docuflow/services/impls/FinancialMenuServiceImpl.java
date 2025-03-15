@@ -7,6 +7,7 @@ import com.github.aclijpio.docuflow.entities.Document;
 import com.github.aclijpio.docuflow.services.FinancialMenuService;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
 import com.github.aclijpio.docuflow.services.process.DocumentProcessor;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -52,12 +53,16 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
 
     private static Parent loadDocument(String resourcePath, DocumentForward documentForward) {
         FXMLLoader fxmlLoader = new FXMLLoader(FinancialApplication.class.getResource(resourcePath));
-        fxmlLoader.setController(new DocumentController(documentForward));
+        DocumentController documentController = new DocumentController(documentForward);
+        fxmlLoader.setController(documentController);
         try {
             return fxmlLoader.load();
         } catch (IOException e) {
             throw new RuntimeException("Failed to load document form " , e);
         }
+    }
+    private void processCompleteDocumentStage(){
+
     }
     private Stage createDocumentStage(DocumentForward documentForward) {
         Scene scene = new Scene(loadDocument(files.getEntity(), documentForward));
@@ -68,4 +73,5 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
         stage.setScene(scene);
         return stage;
     }
+
 }

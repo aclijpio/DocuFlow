@@ -6,8 +6,7 @@ public enum PropertyType {
     TEXT_FIELD,
     DATE,
     ENUM,
-    DOUBLE,
-    ID;
+    DOUBLE;
 
 
 

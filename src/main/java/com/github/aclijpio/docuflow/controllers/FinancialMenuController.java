@@ -4,14 +4,12 @@ import com.github.aclijpio.docuflow.config.source.Files;
 import com.github.aclijpio.docuflow.entities.Document;
 import com.github.aclijpio.docuflow.services.FinancialMenuService;
 import com.github.aclijpio.docuflow.services.impls.FinancialMenuServiceImpl;
-import com.github.aclijpio.docuflow.utils.database.FinancialDatabaseManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 
 public class FinancialMenuController {
-    private final FinancialDatabaseManager databaseManager;
     public ListView<Document> documentList;
     public VBox documentContainer;
 
@@ -20,8 +18,7 @@ public class FinancialMenuController {
     @FXML
     private CheckBox mainCheckboxControl;
 
-    public FinancialMenuController(FinancialDatabaseManager databaseManager, Files files) {
-        this.databaseManager = databaseManager;
+    public FinancialMenuController(Files files) {
         service = new FinancialMenuServiceImpl(files);
     }
 

@@ -12,5 +12,4 @@ import lombok.ToString;
 public class AppConfig {
     private Datasource datasource;
     private Files files;
-    private FinancialConfig financial;
 }

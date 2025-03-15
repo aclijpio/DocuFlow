@@ -1,5 +1,7 @@
 package com.github.aclijpio.docuflow.controllers;
 
+import com.github.aclijpio.docuflow.entities.Document;
+import com.github.aclijpio.docuflow.services.DocumentService;
 import com.github.aclijpio.docuflow.services.impls.DocumentServiceImpl;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
 import javafx.event.ActionEvent;
@@ -10,14 +12,17 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 public class DocumentController implements Initializable {
 
-    private final DocumentServiceImpl service;
+    private final DocumentService service;
+    public Button complete;
 
     @Getter
     @FXML
@@ -26,7 +31,8 @@ public class DocumentController implements Initializable {
     @FXML
     private HBox buttonsForm;
     @FXML
-    private Button deleteButton;
+    @Setter
+    private Consumer<Document> completeProcess;
 
     public DocumentController(DocumentForward documentForward) {
         this.service = new DocumentServiceImpl(documentForward);
@@ -38,12 +44,20 @@ public class DocumentController implements Initializable {
         form.getChildren().addAll(nodes);
     }
 
-    public void close(ActionEvent actionEvent) {
+
+    private void formToDocument() throws IllegalAccessException {
+
+        service.formToDocument(form);
+
+
+
     }
 
-    public void delete(ActionEvent actionEvent) {
-    }
+    public void onComplete(ActionEvent actionEvent) throws IllegalAccessException {
 
+        formToDocument();
+
+    }
 
 
 /*    @Getter
