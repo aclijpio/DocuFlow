@@ -1,5 +1,7 @@
 package com.github.aclijpio.docuflow.services.process.annotations;
 
+import com.github.aclijpio.docuflow.services.PropertyType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

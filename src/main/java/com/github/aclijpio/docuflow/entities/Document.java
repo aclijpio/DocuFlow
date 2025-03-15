@@ -2,9 +2,9 @@ package com.github.aclijpio.docuflow.entities;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.github.aclijpio.docuflow.services.PropertyType;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentId;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;
-import com.github.aclijpio.docuflow.services.process.annotations.PropertyType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -49,41 +49,6 @@ public abstract class Document {
 
     public Document() {
     }
-
-/*    @Override
-    public NodeRegistry toNodeTree(ParentDocumentHelper helper) {
-
-        NodeRegistry nodeRegistry = new NodeRegistry();
-
-        return helper.createNodeRegistryBuilder(nodeRegistry,
-                documentNode -> documentNode
-                        .createNumberLabel(this.number)
-                        .createDateLabel(this.date)
-                        .createUserLabel(this.user)
-                        .createAmountLabel(this.amountOfMoney)
-        );
-    }
-
-
-    @Override
-    public Document fromNodeTree(ParentDocumentHelper helper, NodeRegistry nodeRegistry) {
-
-        TextField textField = nodeRegistry.getNode(TextField.class);
-        this.number = textField.getText();
-        this.date = nodeRegistry.getNode(DatePicker.class).getValue();
-        String username = nodeRegistry.getNode(TextField.class).getText();
-        Optional<User> user = helper.getHelper().getDatabaseManager().findByName(User.class, username);
-
-        if (user.isEmpty()){
-            this.user = new User(username);
-            helper.getHelper().getDatabaseManager().save(this.user);
-        } else {
-            this.user = user.get();
-        }
-        this.amountOfMoney = Double.parseDouble(nodeRegistry.getNode(TextField.class).getText());
-        return this;
-    }*/
-
 
 
     @Override

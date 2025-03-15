@@ -34,32 +34,4 @@ public class Payment extends Document {
 
     public Payment() {
     }
-/*
-    @Override
-    public NodeRegistry toNodeTree(ParentDocumentHelper helper) {
-        NodeRegistry nodeRegistry = super.toNodeTree(helper);
-        nodeRegistry.add(
-                helper.createStringComboBox(
-                        Employee.class,
-                        new TextField(this.getEmployee() == null ? "" : this.getEmployee().getName()),
-                        "Сотрудник: "
-                )
-        );
-        return nodeRegistry;
-    }
-
-    @Override
-    public Document fromNodeTree(ParentDocumentHelper helper, NodeRegistry nodeRegistry) {
-        super.fromNodeTree(helper, nodeRegistry);
-
-        String employeeName = nodeRegistry.getNode(TextField.class).getText();
-        Optional<Employee> employeeOptional = helper.getHelper().getDatabaseManager().findByName(Employee.class, employeeName);
-        if (employeeOptional.isEmpty()){
-            this.employee = new Employee(employeeName);
-            helper.getHelper().getDatabaseManager().save(this.employee);
-        } else {
-            this.employee = employeeOptional.get();
-        }
-        return this;
-    }*/
 }

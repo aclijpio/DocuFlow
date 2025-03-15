@@ -1,10 +1,13 @@
 package com.github.aclijpio.docuflow.entities;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.github.aclijpio.docuflow.entities.money.Currency;
+import com.github.aclijpio.docuflow.config.source.CurrencyCode;
+import com.github.aclijpio.docuflow.services.PropertyType;
+import com.github.aclijpio.docuflow.services.process.annotations.DocumentForm;
+import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,65 +19,36 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @JsonTypeName("invoice")
+@DocumentForm("Накладная")
 public class Invoice extends Document {
-
-    @ManyToOne()
-    @JoinColumn(name = "currency_id", nullable = false)
-    private Currency currency;
+    @Enumerated(EnumType.STRING)
+    @DocumentProperty(type = PropertyType.ENUM, value = "Валюта")
+    private CurrencyCode currencyType;
+    @DocumentProperty(type = PropertyType.DOUBLE, value = "Курс валюты")
+    private Double exchangeCurrency;
+    @DocumentProperty("Продукт")
     private String product;
 
-    public Invoice(String number, LocalDate date, String user, double amountOfMoney, Currency currency, String product) {
-        super(number, date, user, amountOfMoney);
-        this.currency = currency;
+    public Invoice(Long id, String number, LocalDate date, String user, Double amountOfMoney, CurrencyCode currencyType, Double exchangeCurrency, String product) {
+        super(id, number, date, user, amountOfMoney);
+        this.currencyType = currencyType;
+        this.exchangeCurrency = exchangeCurrency;
         this.product = product;
     }
 
-    public Invoice(Long id, String number, LocalDate date, String user, double amountOfMoney, Currency currency, String product) {
-        super(id, number, date, user, amountOfMoney);
-        this.currency = currency;
+    public Invoice(String number, LocalDate date, String user, double amountOfMoney, CurrencyCode currencyType, Double exchangeCurrency, String product) {
+        super(number, date, user, amountOfMoney);
+        this.currencyType = currencyType;
+        this.exchangeCurrency = exchangeCurrency;
+        this.product = product;
+    }
+
+    public Invoice(CurrencyCode currencyType, Double exchangeCurrency, String product) {
+        this.currencyType = currencyType;
+        this.exchangeCurrency = exchangeCurrency;
         this.product = product;
     }
 
     public Invoice() {
     }
-/*
-    @Override
-    public NodeRegistry toNodeTree(ParentDocumentHelper helper) {
-
-
-        NodeRegistry nodeRegistry = super.toNodeTree(helper);
-
-        return helper.createNodeRegistryBuilder(nodeRegistry
-                , documentNode -> documentNode
-                        .createCurrencyLabel(this.currency)
-                        .createProductLabel(this.product)
-        );
-    }
-
-    @Override
-    public Document fromNodeTree(ParentDocumentHelper helper, NodeRegistry nodeRegistry) {
-
-
-        super.fromNodeTree(helper, nodeRegistry);
-
-        CurrencyCode stringCurrency = (CurrencyCode) nodeRegistry.getNode(ComboBox.class).getSelectionModel().getSelectedItem();
-
-        Optional<Currency> currency = helper.getHelper().getDatabaseManager().findCurrencyByCurrencyCode(stringCurrency);
-        if (currency.isEmpty())
-            throw new NodeUnavailableException("Currency not found");
-        this.currency = currency.get();
-        nodeRegistry.skip();
-        String productName =  nodeRegistry.getNode(TextField.class).getText();
-        Optional<Product> product = helper.getHelper().getDatabaseManager().findByName(Product.class, productName);
-        double quantity = Double.parseDouble(nodeRegistry.getNode(TextField.class).getText());
-        if (product.isEmpty()) {
-            this.product = new Product(productName, quantity);
-            helper.getHelper().getDatabaseManager().save(this.product);
-        }
-        else {
-            this.product = product.get();
-        }
-
-        return this;*/
-
 }

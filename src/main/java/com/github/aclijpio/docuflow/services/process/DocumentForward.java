@@ -1,6 +1,7 @@
 package com.github.aclijpio.docuflow.services.process;
 
 
+
 import com.github.aclijpio.docuflow.entities.Document;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;
 import lombok.Getter;
