@@ -51,7 +51,8 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
      * @param documents список документов
      * @return Список кнопок
      */
-    public List<Button> createDocumentActionButtons(URL resourcePath, Class<? extends Document> ... documents){
+    @SafeVarargs
+    public final List<Button> createDocumentActionButtons(URL resourcePath, Class<? extends Document>... documents){
         this.objectMapper = createStandartObjectMapper(documents);
         return Arrays.stream(documents)
                 .map(DocumentProcessor::forwardProcess)
@@ -67,12 +68,21 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
         Button button = new Button();
         button.setText(documentForward.getDocumentName());
         button.setOnAction(event -> {
-            DocumentForward newForward = DocumentProcessor.forwardProcess(documentForward.getDocument().getClass());
-            Stage stage = createDocumentStage(newForward, resourcePath);
-            stage.show();
+            showNewDocument(documentForward, resourcePath);
         });
 
         return button;
+    }
+    public void showNewDocument(DocumentForward documentForward, URL resourcePath){
+        DocumentForward newForward = DocumentProcessor.forwardProcess(documentForward.getDocument().getClass());
+        Stage stage = createDocumentStage(newForward, resourcePath);
+        stage.show();
+    }
+    @Override
+    public void showDocument(DocumentForward documentForward, URL resourcePath) {
+        DocumentForward newForward = DocumentProcessor.forwardProcess(documentForward.getDocument());
+        Stage stage = createDocumentStage(newForward, resourcePath);
+        stage.show();
     }
     @SafeVarargs
     private ObjectMapper createStandartObjectMapper(Class<? extends Document> ... documents){
@@ -208,6 +218,7 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
             }
         }
     }
+
     private Optional<DocumentItem> isEquals(DocumentItem item, ObservableList<DocumentItem> observableList){
         if (item.getForward().getDocument().getNumber() == null) {
             callErrorAlert(String.format("Загружаем объект не имеет номера документа! \n\t%s",

@@ -2,6 +2,7 @@ package com.github.aclijpio.docuflow.services;
 
 import com.github.aclijpio.docuflow.entities.Document;
 import com.github.aclijpio.docuflow.entities.DocumentItem;
+import com.github.aclijpio.docuflow.services.process.DocumentForward;
 import javafx.scene.control.Button;
 
 import java.net.URL;
@@ -13,6 +14,6 @@ public interface FinancialMenuService {
     void saveToJsonFile(List<Document> documentList);
     List<Document> loadDocumentsFromJsonFile();
     void offerSimilar(List<DocumentItem> items);
-
+    void showDocument(DocumentForward documentForward, URL resourcePath);
 
 }

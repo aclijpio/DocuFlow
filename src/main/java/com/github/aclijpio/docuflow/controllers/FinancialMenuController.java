@@ -30,6 +30,7 @@ public class FinancialMenuController {
 
     @FXML
     private CheckBox mainCheckboxControl;
+    private URL resourcePath;
 
     public FinancialMenuController() {
         service = new FinancialMenuServiceImpl(this);
@@ -44,6 +45,10 @@ public class FinancialMenuController {
                     public ObservableValue<Boolean> call(DocumentItem document) {
                         BooleanProperty observable = document.getProperty();
                         observable.addListener((obs, wasSelected, isNowSelected) -> {
+                            if (mainCheckboxControl.isSelected() && !isNowSelected)
+                                mainCheckboxControl.setSelected(false);
+
+
                             observable.setValue(isNowSelected);
                         });
 
@@ -60,6 +65,7 @@ public class FinancialMenuController {
                     }
                 }
         ));
+        this.resourcePath = resourcePath;
         documentContainer.getChildren().addAll(
                 service.createDocumentActionButtons(
                         resourcePath,
@@ -107,18 +113,20 @@ public class FinancialMenuController {
 
     @FXML
     public void showDocument() {
-        // Логика для просмотра документа
+        if (resourcePath != null) {
+            DocumentItem documentItem = documentList.getSelectionModel().getSelectedItem();
+            service.showDocument(documentItem.getForward(), resourcePath);
+        } else
+            throw new IllegalStateException("Document resource path is mismatch");
     }
 
     @FXML
     public void delete() {
-        // Логика для удаления
+        DocumentItem documentItem = documentList.getSelectionModel().getSelectedItem();
+        documentList.getItems().remove(documentItem);
     }
 
-    @FXML
-    public void close() {
-        // Логика для закрытия приложения
-    }
+
 
     public List<Document> findSelectedDocumentItems(ListView<DocumentItem> documentList){
         return documentList.getItems().stream()
