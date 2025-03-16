@@ -51,7 +51,7 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
      * @param documents список документов
      * @return Список кнопок
      */
-    public List<Button> createDocumentActionButtons(URL resourcePath, Document ... documents){
+    public List<Button> createDocumentActionButtons(URL resourcePath, Class<? extends Document> ... documents){
         this.objectMapper = createStandartObjectMapper(documents);
         return Arrays.stream(documents)
                 .map(DocumentProcessor::forwardProcess)
@@ -67,16 +67,18 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
         Button button = new Button();
         button.setText(documentForward.getDocumentName());
         button.setOnAction(event -> {
-            Stage stage = createDocumentStage(documentForward, resourcePath);
+            DocumentForward newForward = DocumentProcessor.forwardProcess(documentForward.getDocument().getClass());
+            Stage stage = createDocumentStage(newForward, resourcePath);
             stage.show();
         });
 
         return button;
     }
-    private ObjectMapper createStandartObjectMapper(Document ... documents){
+    @SafeVarargs
+    private ObjectMapper createStandartObjectMapper(Class<? extends Document> ... documents){
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.registerSubtypes(Arrays.stream(documents).map(Document::getClass).toArray(Class[]::new));
+        objectMapper.registerSubtypes(documents);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.WRAPPER_ARRAY);
         return objectMapper;

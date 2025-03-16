@@ -5,7 +5,6 @@ import com.github.aclijpio.docuflow.services.DocumentService;
 import com.github.aclijpio.docuflow.services.exceptions.InvalidInputException;
 import com.github.aclijpio.docuflow.services.process.DocumentField;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
-import com.github.aclijpio.docuflow.services.process.DocumentIdField;
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -84,9 +83,6 @@ public class DocumentServiceImpl implements DocumentService {
 
         List<DocumentField> fields = documentForward.getFields();
         List<Node> result = new ArrayList<>();
-        if (documentForward.hasId()){
-            result.add(createIdField(documentForward.getDocumentIdField()));
-        }
         result.addAll(fields.stream().map(field -> {
             return switch (field.getType()){
                 case TEXT_FIELD -> createField(FieldCreator::createTextField, field);
@@ -101,13 +97,6 @@ public class DocumentServiceImpl implements DocumentService {
     private Node createField(FieldCreatorFunction creator, DocumentField field) {
         try {
             return creator.apply(field);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-    private Node createIdField(DocumentIdField field) {
-        try {
-            return FieldCreator.createIdField(field);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -143,12 +132,6 @@ public class DocumentServiceImpl implements DocumentService {
             Label label = new Label(documentField.getName());
             TextField textField = new TextField((String.valueOf(documentField.getValue(documentForward.getDocument()))));
             textField.setTextFormatter(TextFormatters.createIntegerFormatter());
-            return hCombine(label, textField);
-        }
-        public static Node createIdField(DocumentIdField idField) throws IllegalAccessException {
-            Label label = new Label(idField.getName());
-            TextField textField = new TextField(String.valueOf(idField.getValue(documentForward.getDocument())));
-            textField.setEditable(false);
             return hCombine(label, textField);
         }
 

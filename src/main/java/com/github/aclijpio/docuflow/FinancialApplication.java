@@ -33,9 +33,9 @@ public class FinancialApplication extends Application{
 
         controller.initializeDocuments(
                 documentPath,
-                new Invoice(),
-                new Payment(),
-                new PaymentRequest()
+                Invoice.class,
+                Payment.class,
+                PaymentRequest.class
         );
         Scene scene = new Scene(root);
         stage.setTitle("Financial");

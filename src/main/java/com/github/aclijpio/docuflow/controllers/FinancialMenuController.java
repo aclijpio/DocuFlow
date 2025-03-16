@@ -36,9 +36,8 @@ public class FinancialMenuController {
     }
 
 
-    public void initializeDocuments(URL resourcePath, Document ... documents) {
-
-
+    @SafeVarargs
+    public final void initializeDocuments(URL resourcePath, Class<? extends Document>... documents) {
         documentList.setCellFactory(CheckBoxListCell.forListView(
                 new Callback<DocumentItem, ObservableValue<Boolean>>() {
                     @Override

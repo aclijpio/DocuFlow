@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface FinancialMenuService {
 
-    List<Button> createDocumentActionButtons(URL resourcePath, Document ... documents);
+    List<Button> createDocumentActionButtons(URL resourcePath, Class<? extends Document> ... documents);
     void saveToJsonFile(List<Document> documentList);
     List<Document> loadDocumentsFromJsonFile();
     void offerSimilar(List<DocumentItem> items);
