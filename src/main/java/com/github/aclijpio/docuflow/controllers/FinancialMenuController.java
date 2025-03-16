@@ -29,14 +29,12 @@ public class FinancialMenuController {
     private final FinancialMenuService service;
 
     @FXML
-    private CheckBox mainCheckboxControl;
+    public CheckBox mainCheckboxControl;
     private URL resourcePath;
 
     public FinancialMenuController() {
         service = new FinancialMenuServiceImpl(this);
     }
-
-
     @SafeVarargs
     public final void initializeDocuments(URL resourcePath, Class<? extends Document>... documents) {
         documentList.setCellFactory(CheckBoxListCell.forListView(
@@ -93,7 +91,6 @@ public class FinancialMenuController {
             }
         });
     }
-
     @FXML
     public void save() {
         this.service.saveToJsonFile(
@@ -110,7 +107,6 @@ public class FinancialMenuController {
         service.offerSimilar(items);
 
     }
-
     @FXML
     public void showDocument() {
         if (resourcePath != null) {
@@ -119,15 +115,15 @@ public class FinancialMenuController {
         } else
             throw new IllegalStateException("Document resource path is mismatch");
     }
-
     @FXML
     public void delete() {
-        DocumentItem documentItem = documentList.getSelectionModel().getSelectedItem();
-        documentList.getItems().remove(documentItem);
+        List<Document> documents = findSelectedDocumentItems(documentList);
+        for(Document item : documents)
+            documentList.getItems().removeIf(documentItem -> documentItem.getForward().getDocument().equals(item));
+
+        if (documentList.getItems().isEmpty())
+            mainCheckboxControl.setSelected(false);
     }
-
-
-
     public List<Document> findSelectedDocumentItems(ListView<DocumentItem> documentList){
         return documentList.getItems().stream()
                 .filter(DocumentItem::isSelected)

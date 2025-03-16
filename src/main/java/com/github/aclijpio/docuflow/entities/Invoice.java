@@ -26,7 +26,6 @@ public class Invoice extends Document {
     @DocumentProperty("Продукт")
     private String product;
 
-
     public Invoice(String number, LocalDate date, String user, double amountOfMoney, CurrencyCode currencyType, Double exchangeCurrency, String product) {
         super(number, date, user, amountOfMoney);
         this.currencyType = currencyType;

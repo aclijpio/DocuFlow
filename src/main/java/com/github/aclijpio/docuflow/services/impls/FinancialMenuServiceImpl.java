@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.aclijpio.docuflow.FinancialApplication;
 import com.github.aclijpio.docuflow.controllers.DocumentController;
 import com.github.aclijpio.docuflow.controllers.FinancialMenuController;
 import com.github.aclijpio.docuflow.entities.Document;
@@ -24,6 +25,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -107,8 +109,6 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
     }
     private Stage createDocumentStage(Scene scene, String title) {
         Stage stage = new Stage();
-        stage.setMinWidth(scene.getWidth());
-        stage.setMinHeight(scene.getHeight());
         stage.setTitle(title);
         stage.setScene(scene);
         return stage;
@@ -119,8 +119,12 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
         DocumentController documentController = new DocumentController(documentForward);
         fxmlLoader.setController(documentController);
         try {
-            Scene scene = new Scene(fxmlLoader.load());
+            BorderPane pane = fxmlLoader.load();
+            Scene scene = new Scene(pane);
+
             Stage stage = createDocumentStage(scene, documentForward.getDocumentName());
+            stage.setMaxWidth(pane.getPrefWidth());
+            FinancialApplication.calculateMinSize(stage, scene);
             documentController.complete.setOnAction(event -> handleDocumentCompletion(documentController, stage));
             return stage;
         } catch (IOException e) {
@@ -211,8 +215,10 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
                         observableList.set(index, item);
                     } else if (code == ConfirmationCode.SKIP) continue;
                     else if (code == ConfirmationCode.CLOSE) break;
-                } else
+                } else {
                     observableList.add(item);
+                    controller.mainCheckboxControl.setSelected(false);
+                }
             } catch (NullPointerException _) {
                 continue;
             }

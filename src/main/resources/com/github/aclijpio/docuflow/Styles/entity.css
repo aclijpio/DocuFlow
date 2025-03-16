@@ -1,26 +1,45 @@
-.entity_container {
+.fields_container {
+    -fx-hgrow: always; /* Растягиваем контейнер на всю ширину */
     -fx-background-color: #cecece;
     -fx-alignment: center;
-    -fx-padding: 10 5 10 5;
     -fx-spacing: 20;
+    -fx-padding: 20 30 20 30; /* Исправлен синтаксис padding */
 }
+
 .main_container {
     -fx-padding: 60 50 0 50;
     -fx-background-color: #c7c7c7;
 }
+
 .bottom_bar {
     -fx-alignment: center;
     -fx-spacing: 30;
 }
+
 .bottom_bar .button {
     -fx-pref-width: 100;
 }
-.entity_container .text-field{
+
+#hbox {
+    -fx-hgrow: always;
+}
+
+#hbox .text-field {
     -fx-alignment: top_center;
+    -fx-hgrow: always;
+    -fx-max-width: Infinity;
 }
-.entity_container .combo-box{
-    -fx-pref-width: 150;
+
+#hbox .combo-box {
+    -fx-hgrow: always;
+    -fx-max-width: Infinity;
 }
-.entity_container .label {
+
+#hbox .date-picker {
+    -fx-hgrow: always;
+    -fx-max-width: Infinity;
+}
+
+#hbox .label {
     -fx-pref-width: 150;
 }

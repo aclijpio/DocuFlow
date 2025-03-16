@@ -145,9 +145,9 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         private static HBox hCombine(Node... nodes){
-            return new HBox(
-                    nodes
-            );
+            HBox hBox = new HBox(nodes);
+            hBox.setId("hbox");
+            return hBox;
         }
 
         private static class TextFormatters{
