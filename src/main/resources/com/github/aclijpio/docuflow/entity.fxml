@@ -15,7 +15,7 @@
          <bottom>
             <HBox fx:id="buttonsForm" prefHeight="100.0" prefWidth="200.0" styleClass="bottom_bar" stylesheets="@Styles/entity.css" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="complete" mnemonicParsing="false" onAction="#onComplete" text="Ок" />
+                  <Button fx:id="complete" mnemonicParsing="false"  text="Ок" />
                </children>
             </HBox>
          </bottom>

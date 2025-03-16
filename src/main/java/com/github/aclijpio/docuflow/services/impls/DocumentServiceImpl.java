@@ -1,8 +1,8 @@
 package com.github.aclijpio.docuflow.services.impls;
 
 import com.github.aclijpio.docuflow.entities.CurrencyCode;
-import com.github.aclijpio.docuflow.entities.Document;
 import com.github.aclijpio.docuflow.services.DocumentService;
+import com.github.aclijpio.docuflow.services.exceptions.InvalidInputException;
 import com.github.aclijpio.docuflow.services.process.DocumentField;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
 import com.github.aclijpio.docuflow.services.process.DocumentIdField;
@@ -32,29 +32,36 @@ public class DocumentServiceImpl implements DocumentService {
      * @return документ
      */
 
-    public DocumentForward formToDocument(Node box) throws IllegalAccessException {
+    public DocumentForward formToDocument(Node box) throws IllegalAccessException, InvalidInputException {
         List<DocumentField> fields = documentForward.getFields();
-        Document document = documentForward.getDocument();
         VBox form = (VBox) box;
         for (int i = 0; i < fields.size(); i++){
             DocumentField field = fields.get(i);
             HBox hBox = (HBox)form.getChildren().get(i);
             Node node = hBox.getChildren().get(1);
-            System.out.println(node);
             switch (field.getType()){
                 case TEXT_FIELD -> {
                     TextField textField = (TextField) node;
                     String value = textField.getText();
+                    if (value == null || value.isEmpty())
+                        throw new InvalidInputException(String.format("Поле '%s.%s' не может быть пустым.",
+                                field.getName(), field.getType()));
                     documentForward.setValueByIndex(i, value);
                 }
                 case DATE -> {
                     DatePicker datePicker = (DatePicker) node;
                     LocalDate localDate = datePicker.getValue();
+                    if (localDate == null)
+                        throw new InvalidInputException(String.format("Поле '%s.%s' не может быть пустым.",
+                                field.getName(), field.getType()));
                     documentForward.setValueByIndex(i, localDate);
                 }
                 case DOUBLE -> {
                     TextField textField = (TextField) node;
                     Double value = Double.parseDouble(textField.getText());
+                    if (value.isNaN() || value.isInfinite())
+                        throw new InvalidInputException(String.format("Значение поле '%s.%s' некорректна.",
+                                field.getName(), field.getType()));
                     documentForward.setValueByIndex(i, value);
                 }
                 case ENUM -> {
@@ -65,11 +72,6 @@ public class DocumentServiceImpl implements DocumentService {
                 }
             };
         }
-
-        for (DocumentField field : fields) {
-            System.out.println(field.getValue(document));
-        }
-
         return documentForward;
     }
 
@@ -134,6 +136,7 @@ public class DocumentServiceImpl implements DocumentService {
         public static  Node  createCurrencyEnumField(DocumentField documentField) throws IllegalAccessException {
             Label label = new Label(documentField.getName());
             ComboBox<CurrencyCode> currencyCodeComboBox = new ComboBox<>(FXCollections.observableArrayList(CurrencyCode.values()));
+            currencyCodeComboBox.setValue(CurrencyCode.values()[0]);
             return hCombine(label, currencyCodeComboBox);
         }
         public static Node createIntegerField(DocumentField documentField) throws IllegalAccessException {

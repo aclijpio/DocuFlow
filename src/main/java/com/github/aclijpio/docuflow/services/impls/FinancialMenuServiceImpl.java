@@ -13,6 +13,8 @@ import com.github.aclijpio.docuflow.controllers.FinancialMenuController;
 import com.github.aclijpio.docuflow.entities.Document;
 import com.github.aclijpio.docuflow.entities.DocumentItem;
 import com.github.aclijpio.docuflow.services.FinancialMenuService;
+import com.github.aclijpio.docuflow.services.exceptions.InvalidDocumentFormatException;
+import com.github.aclijpio.docuflow.services.exceptions.InvalidInputException;
 import com.github.aclijpio.docuflow.services.process.DocumentForward;
 import com.github.aclijpio.docuflow.services.process.DocumentProcessor;
 import javafx.collections.ObservableList;
@@ -38,6 +40,8 @@ import java.util.Optional;
 public class FinancialMenuServiceImpl implements FinancialMenuService {
     private static FinancialMenuController controller;
     private ObjectMapper objectMapper;
+
+
 
     public FinancialMenuServiceImpl(FinancialMenuController controller) {
         FinancialMenuServiceImpl.controller = controller;
@@ -78,28 +82,40 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
         return objectMapper;
     }
 
+    private void handleDocumentCompletion(DocumentController documentController, Stage stage) {
+        try {
+            DocumentForward forward = documentController.getDocument();
+            controller.documentList.getItems().add(new DocumentItem(forward));
+            stage.close();
+        } catch (IllegalAccessException e) {
+            callErrorAlert("Document field type is mismatch.\n\t" + e.getMessage());
+        } catch (InvalidInputException e) {
+            callErrorAlert(e.getMessage());
+        }
+    }
+    private Stage createDocumentStage(Scene scene, String title) {
+        Stage stage = new Stage();
+        stage.setMinWidth(scene.getWidth());
+        stage.setMinHeight(scene.getHeight());
+        stage.setTitle(title);
+        stage.setScene(scene);
+        return stage;
+    }
+
     private Stage createDocumentStage(DocumentForward documentForward, URL resourcePath) {
         FXMLLoader fxmlLoader = new FXMLLoader(resourcePath);
         DocumentController documentController = new DocumentController(documentForward);
         fxmlLoader.setController(documentController);
         try {
             Scene scene = new Scene(fxmlLoader.load());
-            Stage stage = new Stage();
-
-            documentController.complete.setOnAction(event -> {
-                DocumentForward forward = documentController.getDocument();
-                controller.documentList.getItems().add(new DocumentItem(forward));
-                stage.close();
-            });
-            stage.setMinWidth(scene.getWidth());
-            stage.setMinHeight(scene.getHeight());
-            stage.setTitle(documentForward.getDocumentName());
-            stage.setScene(scene);
+            Stage stage = createDocumentStage(scene, documentForward.getDocumentName());
+            documentController.complete.setOnAction(event -> handleDocumentCompletion(documentController, stage));
             return stage;
         } catch (IOException e) {
             throw new RuntimeException("Failed to load document form " , e);
         }
     }
+
 
     @Override
     public void saveToJsonFile(List<Document> documentList){
@@ -130,19 +146,30 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
                 List<Object> objects = objectMapper.readValue(fileReader, new TypeReference<List<Object>>() {});
                 List<Document> documents = new ArrayList<>();
                 for (Object obj : objects) {
-                    Document document = (Document) obj;
-                    documents.add(document);
+                    if (obj instanceof Document) {
+                        documents.add((Document) obj);
+                    } else {
+                        throw new InvalidDocumentFormatException(
+                                "Invalid document format in JSON file: expected Document, but got " + obj.getClass().getSimpleName()
+                        );
+                    }
                 }
                 return documents;
             } catch (StreamReadException e) {
-                System.out.println("StreamReadException");
-                throw new RuntimeException(e);
+                callErrorAlert(String.format("Failed to read JSON file: %s\n\t%s",
+                        selectedFile.getAbsolutePath(),
+                        e.getMessage()));
             } catch (DatabindException e) {
-                System.out.println("DatabindException");
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                System.out.println("IOException");
-                throw new RuntimeException(e);
+                callErrorAlert(String.format("Invalid Document format: %s\n\t%s",
+                        selectedFile.getAbsolutePath(),
+                        e.getMessage()));
+            }catch (InvalidDocumentFormatException e){
+                callErrorAlert(e.getMessage());
+            }
+            catch (IOException e) {
+                callErrorAlert(String.format("Failed to read JSON file: %s\n\t%s",
+                        selectedFile.getAbsolutePath(),
+                        e.getMessage()));
             }
 
         }
@@ -164,7 +191,7 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
                     else
                         code = callConfirmationAlert(document, item);
                     if (code == ConfirmationCode.REPLACE) {
-                        int index = observableList.indexOf(item);
+                        int index = observableList.indexOf(document);
                         observableList.set(index, item);
                     } else if (code == ConfirmationCode.REPLACE_ALL) {
                         replaceAllFlag = true;
