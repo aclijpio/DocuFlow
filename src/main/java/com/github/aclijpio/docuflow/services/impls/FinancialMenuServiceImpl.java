@@ -77,13 +77,13 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
     }
     public void showNewDocument(DocumentForward documentForward, URL resourcePath){
         DocumentForward newForward = DocumentProcessor.forwardProcess(documentForward.getDocument().getClass());
-        Stage stage = createDocumentStage(newForward, resourcePath);
+        Stage stage = createDocumentStage(newForward, resourcePath, this::handleDocumentCompletion);
         stage.show();
     }
     @Override
     public void showDocument(DocumentForward documentForward, URL resourcePath) {
         DocumentForward newForward = DocumentProcessor.forwardProcess(documentForward.getDocument());
-        Stage stage = createDocumentStage(newForward, resourcePath);
+        Stage stage = createDocumentStage(newForward, resourcePath, this::handleShowDocumentCompletion);
         stage.show();
     }
     @SafeVarargs
@@ -107,14 +107,24 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
             callErrorAlert(e.getMessage());
         }
     }
-    private Stage createDocumentStage(Scene scene, String title) {
+    private void handleShowDocumentCompletion(DocumentController documentController, Stage stage) {
+        try {
+            documentController.getDocument();
+            stage.close();
+        } catch (IllegalAccessException e) {
+            callErrorAlert("Document field type is mismatch.\n\t" + e.getMessage());
+        } catch (InvalidInputException e) {
+            callErrorAlert(e.getMessage());
+        }
+    }
+    private Stage createStage(Scene scene, String title) {
         Stage stage = new Stage();
         stage.setTitle(title);
         stage.setScene(scene);
         return stage;
     }
 
-    private Stage createDocumentStage(DocumentForward documentForward, URL resourcePath) {
+    private Stage createDocumentStage(DocumentForward documentForward, URL resourcePath, DocumentCompletionOperation operation) {
         FXMLLoader fxmlLoader = new FXMLLoader(resourcePath);
         DocumentController documentController = new DocumentController(documentForward);
         fxmlLoader.setController(documentController);
@@ -122,10 +132,10 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
             BorderPane pane = fxmlLoader.load();
             Scene scene = new Scene(pane);
 
-            Stage stage = createDocumentStage(scene, documentForward.getDocumentName());
+            Stage stage = createStage(scene, documentForward.getDocumentName());
             stage.setMaxWidth(pane.getPrefWidth());
             FinancialApplication.calculateMinSize(stage, scene);
-            documentController.complete.setOnAction(event -> handleDocumentCompletion(documentController, stage));
+            documentController.complete.setOnAction(event -> operation.apply(documentController, stage));
             return stage;
         } catch (IOException e) {
             throw new RuntimeException("Failed to load document form " , e);
@@ -274,5 +284,8 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
         SKIP,
         CLOSE;
     }
-
+    @FunctionalInterface
+    private interface DocumentCompletionOperation{
+        void apply(DocumentController documentController, Stage stage);
+    }
 }
