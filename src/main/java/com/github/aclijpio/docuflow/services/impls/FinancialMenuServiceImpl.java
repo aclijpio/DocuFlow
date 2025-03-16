@@ -87,7 +87,7 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
     private void handleDocumentCompletion(DocumentController documentController, Stage stage) {
         try {
             DocumentForward forward = documentController.getDocument();
-            controller.documentList.getItems().add(new DocumentItem(forward));
+            offerSimilar(List.of(new DocumentItem(forward)));
             stage.close();
         } catch (IllegalAccessException e) {
             callErrorAlert("Document field type is mismatch.\n\t" + e.getMessage());
@@ -216,10 +216,12 @@ public class FinancialMenuServiceImpl implements FinancialMenuService {
             throw new NullPointerException("Document number is null");
         }
         for (DocumentItem document: observableList) {
-            String current = document.getForward().getDocument().getNumber();
-            String forReplace = item.getForward().getDocument().getNumber();
 
-            if(forReplace.equals(current))  return Optional.of(document);
+            Document current = document.getForward().getDocument();
+            Document forReplace = item.getForward().getDocument();
+
+            if(current.getClass().equals(forReplace.getClass()) && forReplace.getNumber().equals(current.getNumber()))
+                return Optional.of(document);
         }
         return Optional.empty();
     }
