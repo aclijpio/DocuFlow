@@ -38,38 +38,58 @@ public class DocumentServiceImpl implements DocumentService {
             DocumentField field = fields.get(i);
             HBox hBox = (HBox)form.getChildren().get(i);
             Node node = hBox.getChildren().get(1);
-            switch (field.getType()){
-                case TEXT_FIELD -> {
-                    TextField textField = (TextField) node;
-                    String value = textField.getText();
-                    if (value == null || value.isEmpty())
-                        throw new InvalidInputException(String.format("Поле '%s.%s' не может быть пустым.",
-                                field.getName(), field.getType()));
-                    documentForward.setValueByIndex(i, value);
-                }
-                case DATE -> {
-                    DatePicker datePicker = (DatePicker) node;
-                    LocalDate localDate = datePicker.getValue();
-                    if (localDate == null)
-                        throw new InvalidInputException(String.format("Поле '%s.%s' не может быть пустым.",
-                                field.getName(), field.getType()));
-                    documentForward.setValueByIndex(i, localDate);
-                }
-                case DOUBLE -> {
-                    TextField textField = (TextField) node;
-                    Double value = Double.parseDouble(textField.getText());
-                    if (value.isNaN() || value.isInfinite())
-                        throw new InvalidInputException(String.format("Значение поле '%s.%s' некорректна.",
-                                field.getName(), field.getType()));
-                    documentForward.setValueByIndex(i, value);
-                }
-                case ENUM -> {
-                    @SuppressWarnings("unchecked")
-                    ComboBox<CurrencyCode> comboBox = (ComboBox<CurrencyCode>) node;
-                    CurrencyCode currencyCode = comboBox.getValue();
-                    documentForward.setValueByIndex(i, currencyCode);
-                }
-            };
+
+
+            Class<?> type = field.getType();
+
+            if (type.isEnum())
+            {
+                @SuppressWarnings("unchecked")
+                ComboBox<CurrencyCode> comboBox = (ComboBox<CurrencyCode>) node;
+                CurrencyCode currencyCode = comboBox.getValue();
+                documentForward.setValueByIndex(i, currencyCode);
+            }
+            if (type.equals(String.class))
+            {
+                assert node instanceof TextField;
+                TextField textField = (TextField) node;
+                String value = textField.getText();
+                if (value == null || value.isEmpty())
+                    throw new InvalidInputException(String.format("Поле '%s.%s' не может быть пустым.",
+                            field.getName(), field.getType()));
+                documentForward.setValueByIndex(i, value);
+            }
+            if (type.equals(Integer.class))
+            {
+                assert node instanceof TextField;
+                TextField textField = (TextField) node;
+                Integer value = Integer.parseInt(textField.getText());
+                if (value  < 0)
+                    throw new InvalidInputException(String.format("Значение поле '%s.%s' некорректна.",
+                            field.getName(), field.getType()));
+                documentForward.setValueByIndex(i, value);
+            }
+            if (type.equals(Double.class))
+            {
+                assert node instanceof TextField;
+                TextField textField = (TextField) node;
+                Double value = Double.parseDouble(textField.getText());
+                if (value.isNaN() || value.isInfinite())
+                    throw new InvalidInputException(String.format("Значение поле '%s.%s' некорректна.",
+                            field.getName(), field.getType()));
+                documentForward.setValueByIndex(i, value);
+            }
+            if (type.equals(LocalDate.class))
+            {
+                DatePicker datePicker = (DatePicker) node;
+                LocalDate localDate = datePicker.getValue();
+                if (localDate == null)
+                    throw new InvalidInputException(String.format("Поле '%s.%s' не может быть пустым.",
+                            field.getName(), field.getType()));
+                documentForward.setValueByIndex(i, localDate);
+            }
+
+
         }
         return documentForward;
     }
@@ -82,17 +102,24 @@ public class DocumentServiceImpl implements DocumentService {
     public List<Node> createFields() {
 
         List<DocumentField> fields = documentForward.getFields();
-        List<Node> result = new ArrayList<>();
-        result.addAll(fields.stream().map(field -> {
-            return switch (field.getType()){
-                case TEXT_FIELD -> createField(FieldCreator::createTextField, field);
-                case DATE -> createField(FieldCreator::createDateField, field);
-                case DOUBLE -> createField(FieldCreator::createDoubleField, field);
-                case ENUM -> createField(FieldCreator::createCurrencyEnumField, field);
-            };
-        }).toList());
 
-        return result;
+        return new ArrayList<>(fields.stream().map(field -> {
+
+            Class<?> type = field.getType();
+            if (type.isEnum())
+                return createField(FieldCreator::createCurrencyEnumField, field);
+            if (type.equals(String.class))
+                return createField(FieldCreator::createTextField, field);
+            if (type.equals(Integer.class))
+                return createField(FieldCreator::createIntegerField, field);
+            if (type.equals(Double.class))
+                return createField(FieldCreator::createDoubleField, field);
+            if (type.equals(LocalDate.class))
+                return createField(FieldCreator::createDateField, field);
+
+
+            throw new RuntimeException("Invalid class type " + type.getName());
+        }).toList());
     }
     private Node createField(FieldCreatorFunction creator, DocumentField field) {
         try {
@@ -118,8 +145,9 @@ public class DocumentServiceImpl implements DocumentService {
 
         public static Node createDoubleField(DocumentField documentField) throws IllegalAccessException {
             Label label = new Label(documentField.getName());
-            TextField textField = new TextField(String.valueOf(documentField.getValue(documentForward.getDocument())));
-            textField.setTextFormatter(TextFormatters.createDoubleFormatter());
+            Double value = (Double) documentField.getValue(documentForward.getDocument());
+            TextField textField = new TextField(String.valueOf(value));
+            textField.setTextFormatter(TextFormatters.createDoubleFormatter(value));
             return hCombine(label, textField);
         }
         public static  Node  createCurrencyEnumField(DocumentField documentField) throws IllegalAccessException {
@@ -130,8 +158,9 @@ public class DocumentServiceImpl implements DocumentService {
         }
         public static Node createIntegerField(DocumentField documentField) throws IllegalAccessException {
             Label label = new Label(documentField.getName());
-            TextField textField = new TextField((String.valueOf(documentField.getValue(documentForward.getDocument()))));
-            textField.setTextFormatter(TextFormatters.createIntegerFormatter());
+            Integer value = (Integer) documentField.getValue(documentForward.getDocument());
+            TextField textField = new TextField((String.valueOf(value)));
+            textField.setTextFormatter(TextFormatters.createIntegerFormatter(value));
             return hCombine(label, textField);
         }
 
@@ -151,10 +180,10 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         private static class TextFormatters{
-            private static TextFormatter<Integer> createIntegerFormatter() {
+            private static TextFormatter<Integer> createIntegerFormatter(Integer value) {
                 return  new TextFormatter<>(
                         new IntegerStringConverter(),
-                        0,
+                        value,
                         change -> {
                             String newText = change.getControlNewText();
                             if (newText.matches("\\d*"))
@@ -164,10 +193,10 @@ public class DocumentServiceImpl implements DocumentService {
                         }
                 );
             }
-            private static TextFormatter<Double> createDoubleFormatter() {
+            private static TextFormatter<Double> createDoubleFormatter(Double value) {
                 return new TextFormatter<>(
                         new DoubleStringConverter(),
-                        0.0,
+                        value,
                         change -> {
                             String newText = change.getControlNewText();
                             if (newText.matches("-?\\d*(\\.\\d*)?")) {

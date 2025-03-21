@@ -1,7 +1,6 @@
 package com.github.aclijpio.docuflow.services.process;
 
 import com.github.aclijpio.docuflow.entities.Document;
-import com.github.aclijpio.docuflow.services.PropertyType;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;
 
 import java.lang.reflect.Field;
@@ -18,8 +17,8 @@ public class DocumentField {
     public String getName(){
         return property.value();
     }
-    public PropertyType getType() {
-        return property.type();
+    public Class<?> getType() {
+        return field.getType();
     }
     public Object getValue(Document document) throws IllegalAccessException {
         field.setAccessible(true);

@@ -2,7 +2,6 @@ package com.github.aclijpio.docuflow.entities;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.github.aclijpio.docuflow.services.PropertyType;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,12 +21,12 @@ public abstract class Document {
 
     @DocumentProperty("Номер")
     private String number;
-    @DocumentProperty(type = PropertyType.DATE, value = "Дата")
+    @DocumentProperty( value = "Дата")
     private LocalDate date;
     @DocumentProperty("Пользователь")
     private String user;
 
-    @DocumentProperty(type = PropertyType.DOUBLE, value = "Сумма")
+    @DocumentProperty( value = "Сумма")
     private Double amountOfMoney;
 
     public Document(String number, LocalDate date, String user, double amountOfMoney) {

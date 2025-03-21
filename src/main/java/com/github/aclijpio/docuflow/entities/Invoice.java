@@ -1,7 +1,6 @@
 package com.github.aclijpio.docuflow.entities;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.github.aclijpio.docuflow.services.PropertyType;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentForm;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;
 import jakarta.persistence.EnumType;
@@ -19,9 +18,9 @@ import java.time.LocalDate;
 @DocumentForm("Накладная")
 public class Invoice extends Document {
     @Enumerated(EnumType.STRING)
-    @DocumentProperty(type = PropertyType.ENUM, value = "Валюта")
+    @DocumentProperty(value = "Валюта")
     private CurrencyCode currencyType;
-    @DocumentProperty(type = PropertyType.DOUBLE, value = "Курс валюты")
+    @DocumentProperty(value = "Курс валюты")
     private Double exchangeCurrency;
     @DocumentProperty("Продукт")
     private String product;

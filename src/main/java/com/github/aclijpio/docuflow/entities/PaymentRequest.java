@@ -1,7 +1,6 @@
 package com.github.aclijpio.docuflow.entities;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.github.aclijpio.docuflow.services.PropertyType;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentForm;
 import com.github.aclijpio.docuflow.services.process.annotations.DocumentProperty;
 import lombok.EqualsAndHashCode;
@@ -17,11 +16,11 @@ import java.time.LocalDate;
 @DocumentForm("Заявка на оплату")
 public class PaymentRequest extends Document {
 
-    @DocumentProperty(type = PropertyType.ENUM, value = "Валюта")
+    @DocumentProperty(value = "Валюта")
     private CurrencyCode currencyType;
-    @DocumentProperty(type = PropertyType.DOUBLE, value = "Курс валюты")
+    @DocumentProperty(value = "Курс валюты")
     private Double exchangeCurrency;
-    @DocumentProperty(type = PropertyType.DOUBLE, value = "Комиссия")
+    @DocumentProperty(value = "Комиссия")
     private Double commission;
 
 
